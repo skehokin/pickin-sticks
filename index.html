@@ -53,13 +53,14 @@
         // this.load.setPath("./assets/");
         this.load.setCORS("*");
 
-        this.load.image("sky", "https://imgur.com/m820KKC.png");
-        this.load.image("ground", "https://imgur.com/qVbTxJ3.png");
-        this.load.image("effect", "https://imgur.com/ais8K5z.png");
+        this.load.image("sky", "./assets/bg2.png"); //"https://imgur.com/m820KKC.png");
+        //this.load.image("ground", "https://imgur.com/qVbTxJ3.png");
+        this.load.image("effect", "./assets/ghost.png"); //"https://imgur.com/ais8K5z.png");
         //this.load.image("bone", "https://imgur.com/wAiJffK.png");
         // this.load.image("bomb", "bomb.png");
 
-        this.load.spritesheet("bone", "https://imgur.com/9IoNsEN.png", {
+        this.load.spritesheet("bone", "./assets/bones.png", {
+          //"https://imgur.com/9IoNsEN.png", {
           frameWidth: 39,
           frameHeight: 40
         });
@@ -67,7 +68,8 @@
         //   frameWidth: 32,
         //   frameHeight: 48
         // });
-        this.load.spritesheet("doggo", "https://imgur.com/iKCDJ3K.png", {
+        this.load.spritesheet("doggo", "./assets/doggo-small.png", {
+          //"https://imgur.com/iKCDJ3K.png", {
           frameWidth: 72,
           frameHeight: 72
         });
