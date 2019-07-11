@@ -51,6 +51,7 @@
           headerValue: "*"
         };
         // this.load.setPath("./assets/");
+        this.load.setCORS('anonymous');
 
         this.load.image("sky", "https://imgur.com/m820KKC.png");
         this.load.image("ground", "https://imgur.com/qVbTxJ3.png");
@@ -87,8 +88,10 @@
         //  A simple background for our game
         this.add.image(400, 300, "sky");
 
-        //  The platforms group contains the ground and the 2 ledges we can jump on
+        // The platforms group contains the ground and the 2 ledges we can jump on
         effects = this.physics.add.group();
+
+
 
         for (i = 0; i < initialGhosts; i++) {
           effects.create(
@@ -316,10 +319,12 @@
         // }
       }
 
-      function ghostBone(bone, ghost) {
+      function ghostBonebone, ghost) {
         if (gameOver) {
           return;
         }
+
+        const oldBoneLocation = {x: bone.x, y: bone.y}
         // bone.disableBody(true, true);
 
         bone.x = Phaser.Math.Between(0, 800);
@@ -331,8 +336,8 @@
 
         scoreText.setText("Score: " + score);
         const newGhost = effects.create(
-          Phaser.Math.Between(0, 800),
-          Phaser.Math.Between(100, 580),
+          oldBoneLocation.x,
+          oldBoneLocation.y,
           "effect"
         );
         newGhost.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
