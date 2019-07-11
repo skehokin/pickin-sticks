@@ -30,7 +30,7 @@
         }
       };
 
-      var player;
+      var doggo;
       var bone;
       var bombs;
       var platforms;
@@ -51,7 +51,7 @@
           headerValue: "*"
         };
         // this.load.setPath("./assets/");
-        this.load.setCORS('anonymous');
+        this.load.setCORS("anonymous");
 
         this.load.image("sky", "https://imgur.com/m820KKC.png");
         this.load.image("ground", "https://imgur.com/qVbTxJ3.png");
@@ -90,8 +90,6 @@
 
         // The platforms group contains the ground and the 2 ledges we can jump on
         effects = this.physics.add.group();
-
-
 
         for (i = 0; i < initialGhosts; i++) {
           effects.create(
@@ -319,12 +317,12 @@
         // }
       }
 
-      function ghostBonebone, ghost) {
+      function ghostBone(bone, ghost) {
         if (gameOver) {
           return;
         }
 
-        const oldBoneLocation = {x: bone.x, y: bone.y}
+        const oldBoneLocation = { x: bone.x, y: bone.y };
         // bone.disableBody(true, true);
 
         bone.x = Phaser.Math.Between(0, 800);
@@ -351,9 +349,10 @@
 
         ghostText.setText("ghosts: " + effects.countActive(true));
 
-        if (effects.countActive(true) > 200) {
+        if (effects.countActive(true) >= 200) {
           gameOver = true;
           gameOverText.setText("Game Over");
+          doggo.disableBody(true, true);
         }
         //.setXY(Phaser.Math.Between(0, 800), Phaser.Math.Between(16, 540));
 
