@@ -50,7 +50,6 @@
 
         this.load.image("sky", "https://imgur.com/m820KKC.png");
         this.load.image("ground", "https://imgur.com/qVbTxJ3.png");
-        this.load.image("effect", "https://imgur.com/ais8K5z.png");
         //this.load.image("bone", "https://imgur.com/wAiJffK.png");
         // this.load.image("bomb", "bomb.png");
 
@@ -84,45 +83,14 @@
         this.add.image(400, 300, "sky");
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
-        let effects = this.physics.add.group();
+        platforms = this.physics.add.staticGroup();
 
-        for (i = 0; i < 10; i++) {
-          effects.create(
-            Phaser.Math.Between(0, 800),
-            Phaser.Math.Between(16, 540),
-            "effect"
-          );
-        }
-
-        effects.children.iterate(function(child) {
-          //  Give each bone a slightly different bounce
-          child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-          child.setScale(Phaser.Math.FloatBetween(0.3, 0.6));
-          child.alpha = Phaser.Math.FloatBetween(0.2, 0.8);
-          //child.setAcceleration(Phaser.Math.FloatBetween(0, 10));
-          child.setVelocityX(Phaser.Math.FloatBetween(-10, 10));
-          child.setVelocityY(Phaser.Math.FloatBetween(-10, 10));
-          child.setCollideWorldBounds(true);
-          child.flipX = Math.random() > 0.5 ? true : false;
-        });
-        // effects.
-        //   .create(400, 568, "ground")
-        //   .setScale(2)
-        //   .refreshBody();
-
-        // bones = this.physics.add.group({
-        //   key: "bone",
-        //   setXY: {
-        //     x: Phaser.Math.Between(0, 800),
-        //     y: Phaser.Math.Between(16, 540)
-        //   }
-        //});
-        // //  Here we create the ground.
-        // //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        // platforms
-        //   .create(400, 568, "ground")
-        //   .setScale(2)
-        //   .refreshBody();
+        //  Here we create the ground.
+        //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+        platforms
+          .create(400, 568, "ground")
+          .setScale(2)
+          .refreshBody();
 
         //  Now let's create some ledges
         // platforms.create(600, 400, "ground");
@@ -137,11 +105,6 @@
           Phaser.Math.Between(16, 540),
           "bone"
         );
-        bone.setTint();
-
-        bone.tint = 0xffffff;
-
-        bone.setScale(1.3);
         //doggo.setScale(0.4);
         this.anims.create({
           key: "dogSide",
@@ -213,13 +176,13 @@
         //  The score
         scoreText = this.add.text(16, 16, "score: 0", {
           fontSize: "32px",
-          fill: "#fff"
+          fill: "#000"
         });
 
         //  Collide the player and the bones with the platforms
         // this.physics.add.collider(player, platforms);
 
-        this.physics.add.collider(doggo, effects, thing, null, this);
+        // this.physics.add.collider(bones, platforms);
         // this.physics.add.collider(bombs, platforms);
 
         //  Checks to see if the player overlaps with any of the bones, if he does call the collectbone function
@@ -230,33 +193,22 @@
       }
 
       function update() {
-        // if (Math.random() < 0.01) {
-        //   effects.children.iterate(function(child) {
-        //     //  Give each bone a slightly different bounce
-        //     child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-        //     child.setScale(Phaser.Math.FloatBetween(0.3, 0.6));
-        //     child.alpha = Phaser.Math.FloatBetween(0.2, 0.8);
-        //     //child.setAcceleration(Phaser.Math.FloatBetween(0, 10));
-        //     child.setVelocityX(Phaser.Math.FloatBetween(-10, 10));
-        //     child.setVelocityY(Phaser.Math.FloatBetween(-10, 10));
-        //     child.setCollideWorldBounds(true);
-        //     child.flipX = Math.random() > 0.5 ? true : false;
-        //   });
-        // }
+        doggo.setScale(0.8 + doggo.y / 800);
+        bone.setScale(0.8 + bone.y / 800);
         if (gameOver) {
           return;
         }
-        const speed = 500 + score / 50;
+        const speed = 300 + score / 50 + doggo.y / 50;
 
         if (cursors.left.isDown) {
           //   player.setVelocityX(-speed);
           //   player.anims.play("left", true);
           doggo.flipX = true;
-          doggo.setVelocityX(-speed);
+          doggo.setVelocityX(-speed * 2);
           doggo.anims.play("dogSide", true);
         } else if (cursors.right.isDown) {
           //   player.setVelocityX(speed);
-          doggo.setVelocityX(speed);
+          doggo.setVelocityX(speed * 2);
           doggo.flipX = false;
           doggo.anims.play("dogSide", true);
           //   player.anims.play("right", true);
@@ -291,7 +243,7 @@
         // bone.disableBody(true, true);
 
         bone.x = Phaser.Math.Between(0, 800);
-        bone.y = Phaser.Math.Between(100, 580);
+        bone.y = Phaser.Math.Between(16, 540);
 
         if (Math.random() > 0.3) {
           bone.flipX = !bone.flipX;
@@ -301,8 +253,6 @@
         //  Add and update the score
         score += 10;
         scoreText.setText("Score: " + score);
-
-        //effects.create();
 
         // if (bones.countActive(true) === 0) {
         //   //  A new batch of bones to collect
@@ -314,17 +264,7 @@
         bone.anims.play(String(Phaser.Math.Between(0, 2)), true);
         // }
       }
-      function thing(thing1, thing2) {
-        if (Math.random() < 0.01) {
-          setTimeout(() => {
-            thing2.x = Phaser.Math.Between(0, 800);
-            thing2.y = Phaser.Math.Between(0, 600);
-          }, 10000);
-        }
-        thing2.setVelocityX(Phaser.Math.FloatBetween(-10, 10));
-        thing2.setVelocityY(Phaser.Math.FloatBetween(-10, 10));
-        //score--;
-      }
+
       // potentaial achievemtnes
 
       //- [ ] gather one of every bone in a person's body
