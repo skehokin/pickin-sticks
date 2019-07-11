@@ -38,6 +38,10 @@
       var score = 0;
       var gameOver = false;
       var scoreText;
+      var effects;
+      var ghostCount;
+      var gameOverText;
+      const initialGhosts = 2;
 
       var game = new Phaser.Game(config);
 
@@ -70,23 +74,23 @@
       }
 
       function create() {
-        // const music = this.sound.add("music", {
-        //   mute: false,
-        //   volume: 1,
-        //   rate: 1,
-        //   detune: 0,
-        //   seek: 0,
-        //   loop: true,
-        //   delay: 0
-        // });
-        // music.play();
+        const music = this.sound.add("music", {
+          mute: false,
+          volume: 1,
+          rate: 1,
+          detune: 0,
+          seek: 0,
+          loop: true,
+          delay: 0
+        });
+        music.play();
         //  A simple background for our game
         this.add.image(400, 300, "sky");
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
-        let effects = this.physics.add.group();
+        effects = this.physics.add.group();
 
-        for (i = 0; i < 10; i++) {
+        for (i = 0; i < initialGhosts; i++) {
           effects.create(
             Phaser.Math.Between(0, 800),
             Phaser.Math.Between(16, 540),
@@ -100,8 +104,8 @@
           child.setScale(Phaser.Math.FloatBetween(0.3, 0.6));
           child.alpha = Phaser.Math.FloatBetween(0.2, 0.8);
           //child.setAcceleration(Phaser.Math.FloatBetween(0, 10));
-          child.setVelocityX(Phaser.Math.FloatBetween(-10, 10));
-          child.setVelocityY(Phaser.Math.FloatBetween(-10, 10));
+          child.setVelocityX(Phaser.Math.FloatBetween(-100, 100));
+          child.setVelocityY(Phaser.Math.FloatBetween(-100, 100));
           child.setCollideWorldBounds(true);
           child.flipX = Math.random() > 0.5 ? true : false;
         });
@@ -216,6 +220,16 @@
           fill: "#fff"
         });
 
+        ghostText = this.add.text(560, 16, `ghosts: ${initialGhosts}`, {
+          fontSize: "32px",
+          fill: "#fff"
+        });
+
+        gameOverText = this.add.text(200, 200, "", {
+          fontSize: "80px",
+          fill: "#fff"
+        });
+
         //  Collide the player and the bones with the platforms
         // this.physics.add.collider(player, platforms);
 
@@ -225,24 +239,11 @@
         //  Checks to see if the player overlaps with any of the bones, if he does call the collectbone function
         //this.physics.add.overlap(player, bones, collectbone, null, this);
         this.physics.add.overlap(doggo, bone, collectbone, null, this);
-
+        this.physics.add.overlap(effects, bone, ghostBone, null, this);
         // this.physics.add.collider(player, bombs, hitBomb, null, this);
       }
 
       function update() {
-        // if (Math.random() < 0.01) {
-        //   effects.children.iterate(function(child) {
-        //     //  Give each bone a slightly different bounce
-        //     child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-        //     child.setScale(Phaser.Math.FloatBetween(0.3, 0.6));
-        //     child.alpha = Phaser.Math.FloatBetween(0.2, 0.8);
-        //     //child.setAcceleration(Phaser.Math.FloatBetween(0, 10));
-        //     child.setVelocityX(Phaser.Math.FloatBetween(-10, 10));
-        //     child.setVelocityY(Phaser.Math.FloatBetween(-10, 10));
-        //     child.setCollideWorldBounds(true);
-        //     child.flipX = Math.random() > 0.5 ? true : false;
-        //   });
-        // }
         if (gameOver) {
           return;
         }
@@ -314,15 +315,67 @@
         bone.anims.play(String(Phaser.Math.Between(0, 2)), true);
         // }
       }
+
+      function ghostBone(bone, ghost) {
+        if (gameOver) {
+          return;
+        }
+        // bone.disableBody(true, true);
+
+        bone.x = Phaser.Math.Between(0, 800);
+        bone.y = Phaser.Math.Between(100, 580);
+
+        if (Math.random() > 0.3) {
+          bone.flipX = !bone.flipX;
+        }
+
+        scoreText.setText("Score: " + score);
+        const newGhost = effects.create(
+          Phaser.Math.Between(0, 800),
+          Phaser.Math.Between(100, 580),
+          "effect"
+        );
+        newGhost.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+        newGhost.setScale(Phaser.Math.FloatBetween(0.3, 0.6));
+        newGhost.alpha = Phaser.Math.FloatBetween(0.2, 0.8);
+        //child.setAcceleration(Phaser.Math.FloatBetween(0, 10));
+        newGhost.setVelocityX(Phaser.Math.FloatBetween(-100, 100));
+        newGhost.setVelocityY(Phaser.Math.FloatBetween(-100, 100));
+        newGhost.setCollideWorldBounds(true);
+        newGhost.flipX = Math.random() > 0.5 ? true : false;
+
+        ghostText.setText("ghosts: " + effects.countActive(true));
+
+        if (effects.countActive(true) > 200) {
+          gameOver = true;
+          gameOverText.setText("Game Over");
+        }
+        //.setXY(Phaser.Math.Between(0, 800), Phaser.Math.Between(16, 540));
+
+        //  Add and update the score
+
+        //effects.create();
+
+        // if (bones.countActive(true) === 0) {
+        //   //  A new batch of bones to collect
+        //   bones.create(
+        //     Phaser.Math.Between(0, 800),
+        //     Phaser.Math.Between(16, 540),
+        //     "bone"
+        //   );
+        bone.anims.play(String(Phaser.Math.Between(0, 2)), true);
+        // }
+      }
+
       function thing(thing1, thing2) {
-        if (Math.random() < 0.01) {
+        if (Math.random() < 0.05) {
           setTimeout(() => {
             thing2.x = Phaser.Math.Between(0, 800);
             thing2.y = Phaser.Math.Between(0, 600);
           }, 10000);
         }
-        thing2.setVelocityX(Phaser.Math.FloatBetween(-10, 10));
-        thing2.setVelocityY(Phaser.Math.FloatBetween(-10, 10));
+        thing2.setVelocityX(Phaser.Math.FloatBetween(-100, 100));
+        thing2.setVelocityY(Phaser.Math.FloatBetween(-100, 100));
         //score--;
       }
       // potentaial achievemtnes
