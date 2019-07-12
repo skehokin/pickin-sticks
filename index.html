@@ -103,6 +103,8 @@
 
         effects.children.iterate(function(child) {
           //  Give each bone a slightly different bounce
+
+          child.setBounceX(Phaser.Math.FloatBetween(0.4, 0.8));
           child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
           child.setScale(Phaser.Math.FloatBetween(0.3, 0.6));
           child.alpha = Phaser.Math.FloatBetween(0.2, 0.8);
@@ -111,7 +113,19 @@
           child.setVelocityY(Phaser.Math.FloatBetween(-100, 100));
           child.setCollideWorldBounds(true);
           child.flipX = Math.random() > 0.5 ? true : false;
+
+          child.body.onWorldBounds = true;
         });
+
+        this.physics.world.setBounds(0, 0, 800, 600, true, true, true, true);
+        this.physics.world.on(
+          "worldbounds",
+          function(body) {
+            console.log("hello from the edge of the world", body);
+          },
+          this
+        );
+
         // effects.
         //   .create(400, 568, "ground")
         //   .setScale(2)
@@ -334,19 +348,24 @@
           bone.flipX = !bone.flipX;
         }
 
-        scoreText.setText("Score: " + score);
         const newGhost = effects.create(
           oldBoneLocation.x,
           oldBoneLocation.y,
           "effect"
         );
+
+        console.log(newGhost);
+
+        newGhost.body.onWorldBounds = true;
+        newGhost.setCollideWorldBounds(true);
+        newGhost.setBounceX(Phaser.Math.FloatBetween(0.4, 0.8));
         newGhost.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
         newGhost.setScale(Phaser.Math.FloatBetween(0.3, 0.6));
         newGhost.alpha = Phaser.Math.FloatBetween(0.2, 0.8);
-        //child.setAcceleration(Phaser.Math.FloatBetween(0, 10));
+        //newGhost.setAcceleration(Phaser.Math.FloatBetween(0, 10));
         newGhost.setVelocityX(Phaser.Math.FloatBetween(-100, 100));
         newGhost.setVelocityY(Phaser.Math.FloatBetween(-100, 100));
-        newGhost.setCollideWorldBounds(true);
+
         newGhost.flipX = Math.random() > 0.5 ? true : false;
 
         ghostText.setText("ghosts: " + effects.countActive(true));
